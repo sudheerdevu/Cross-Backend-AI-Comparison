@@ -1,0 +1,85 @@
+# CUDA Backend Configuration
+# Configuration for NVIDIA CUDA/TensorRT inference backend
+
+cuda:
+  # Default device ID
+  device_id: 0
+  
+  # CUDA settings
+  runtime:
+    visible_devices: null  # null = all, or list [0, 1]
+    memory_fraction: 0.9  # Fraction of GPU memory to use
+    
+  # ONNX Runtime CUDA EP settings
+  onnxruntime:
+    provider: "CUDAExecutionProvider"
+    options:
+      device_id: 0
+      cudnn_conv_algo_search: "EXHAUSTIVE"  # or "DEFAULT", "HEURISTIC"
+      gpu_mem_limit: null  # bytes, null = no limit
+      arena_extend_strategy: "kNextPowerOfTwo"
+      do_copy_in_default_stream: true
+      
+  # TensorRT settings
+  tensorrt:
+    enabled: true
+    provider: "TensorrtExecutionProvider"
+    options:
+      device_id: 0
+      trt_fp16_enable: true
+      trt_int8_enable: false
+      trt_max_workspace_size: 2147483648  # 2GB
+      trt_engine_cache_enable: true
+      trt_engine_cache_path: "./trt_cache"
+      trt_force_sequential_engine_build: false
+      
+  # cuDNN settings
+  cudnn:
+    benchmark_mode: true
+    deterministic: false
+    allow_tf32: true
+    
+  # Memory management
+  memory:
+    memory_pool_type: "default"  # or "cudaMallocAsync"
+    preallocate: false
+    
+  # Profiling settings
+  profiling:
+    enabled: false
+    use_cuda_events: true
+    cupti_enabled: false
+    output_dir: "./profiling_results"
+    
+  # Environment variables
+  environment:
+    CUDA_LAUNCH_BLOCKING: "0"
+    CUDA_DEVICE_ORDER: "PCI_BUS_ID"
+    TF_CUDNN_USE_AUTOTUNE: "1"
+
+# Performance tuning presets
+presets:
+  latency:
+    description: "Optimize for lowest latency"
+    tensorrt:
+      trt_fp16_enable: true
+      builder_optimization_level: 5
+    cudnn:
+      benchmark_mode: true
+    batch_size: 1
+    
+  throughput:
+    description: "Optimize for maximum throughput"
+    tensorrt:
+      trt_fp16_enable: true
+    batch_size: 32
+    use_cuda_graphs: true
+    
+  accuracy:
+    description: "Optimize for best accuracy"
+    tensorrt:
+      trt_fp16_enable: false
+      trt_int8_enable: false
+    cudnn:
+      deterministic: true
+      allow_tf32: false

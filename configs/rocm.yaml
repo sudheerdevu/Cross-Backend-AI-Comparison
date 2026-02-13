@@ -1,0 +1,78 @@
+# ROCm Backend Configuration
+# Configuration for AMD ROCm inference backend
+
+rocm:
+  # Default device ID
+  device_id: 0
+  
+  # HIP runtime settings
+  hip:
+    visible_devices: null  # null = all devices, or list like [0, 1]
+    
+  # ONNX Runtime ROCm EP settings
+  onnxruntime:
+    provider: "ROCMExecutionProvider"
+    options:
+      device_id: 0
+      arena_extend_strategy: "kNextPowerOfTwo"
+      gpu_mem_limit: null  # null = no limit
+      gpu_external_alloc: false
+      gpu_external_free: false
+      
+  # MIGraphX optimization settings
+  migraphx:
+    enabled: true
+    optimization_level: 3
+    exhaustive_tune: false
+    fp16_mode: true
+    int8_mode: false
+    fast_math: true
+    
+  # Memory management
+  memory:
+    enable_memory_pool: true
+    initial_pool_size_mb: 1024
+    max_pool_size_mb: 8192
+    
+  # Profiling settings
+  profiling:
+    enabled: false
+    rocprof_path: "/opt/rocm/bin/rocprof"
+    metrics:
+      - "GPUBusy"
+      - "VALUInsts"
+      - "VALUUtilization"
+      - "FetchSize"
+      - "WriteSize"
+    output_dir: "./profiling_results"
+    
+  # Environment variables to set
+  environment:
+    HSA_OVERRIDE_GFX_VERSION: null  # e.g., "10.3.0" for compatibility
+    HIP_FORCE_DEV_KERNARG: null
+    AMD_SERIALIZE_KERNEL: "3"  # For debugging
+    AMD_SERIALIZE_COPY: "3"
+
+# Performance tuning presets
+presets:
+  latency:
+    description: "Optimize for lowest latency (single inference)"
+    migraphx:
+      exhaustive_tune: true
+      fast_math: true
+    batch_size: 1
+    
+  throughput:
+    description: "Optimize for maximum throughput (batch processing)"
+    migraphx:
+      exhaustive_tune: false
+      fast_math: true
+    batch_size: 32
+    
+  accuracy:
+    description: "Optimize for best accuracy"
+    migraphx:
+      fp16_mode: false
+      int8_mode: false
+      fast_math: false
+    batch_size: 1

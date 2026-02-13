@@ -1,0 +1,97 @@
+# OpenVINO Backend Configuration
+# Configuration for Intel OpenVINO inference backend
+
+openvino:
+  # Default device
+  device: "CPU"  # CPU, GPU, NPU, AUTO, MULTI, HETERO
+  
+  # Device-specific settings
+  cpu:
+    inference_num_threads: 0  # 0 = auto
+    bind_thread: true
+    throughput_streams: "AUTO"
+    enable_hyper_threading: true
+    
+  gpu:
+    cache_dir: "./cache"
+    hint_1: "PERFORMANCE"
+    
+  npu:
+    performance_hint_num_requests: 4
+    
+  # ONNX Runtime OpenVINO EP settings
+  onnxruntime:
+    provider: "OpenVINOExecutionProvider"
+    options:
+      device_type: "CPU_FP32"
+      precision: "FP32"
+      enable_vpu_fast_compile: false
+      num_of_threads: 0
+      cache_dir: "./ov_cache"
+      enable_opencl_throttling: false
+      
+  # Model optimization settings
+  optimization:
+    compress_to_fp16: true
+    enable_moc_transformations: true
+    reshape_model: false
+    input_shapes: null
+    
+  # NNCF quantization settings
+  quantization:
+    enabled: false
+    preset: "performance"  # or "mixed", "accuracy"
+    target_device: "CPU"
+    fast_bias_correction: true
+    
+  # Performance hint
+  performance_hint: "LATENCY"  # or "THROUGHPUT", "CUMULATIVE_THROUGHPUT"
+  
+  # Caching settings
+  cache:
+    enabled: true
+    directory: "./ov_cache"
+    
+  # Profiling settings  
+  profiling:
+    enabled: false
+    export_path: "./profiling_results"
+
+# Performance tuning presets
+presets:
+  latency:
+    description: "Optimize for lowest latency"
+    device: "CPU"
+    performance_hint: "LATENCY"
+    cpu:
+      throughput_streams: 1
+    batch_size: 1
+    
+  throughput:
+    description: "Optimize for maximum throughput"
+    device: "CPU"
+    performance_hint: "THROUGHPUT"
+    cpu:
+      throughput_streams: "AUTO"
+    batch_size: 8
+    
+  accuracy:
+    description: "Optimize for best accuracy"
+    device: "CPU"
+    optimization:
+      compress_to_fp16: false
+    quantization:
+      enabled: false
+      
+  gpu_latency:
+    description: "Low latency on Intel GPU"
+    device: "GPU"
+    performance_hint: "LATENCY"
+    gpu:
+      hint_1: "PERFORMANCE"
+    batch_size: 1
+    
+  multi_device:
+    description: "Use multiple devices"
+    device: "MULTI:CPU,GPU"
+    performance_hint: "CUMULATIVE_THROUGHPUT"
