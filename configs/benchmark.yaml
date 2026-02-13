@@ -1,0 +1,43 @@
+# Cross-Backend AI Comparison - Benchmark Configuration
+
+# Backends to test
+backends:
+  - cpu
+  - cuda
+  - rocm
+  - directml
+
+# Batch sizes
+batch_sizes:
+  - 1
+  - 4
+  - 8
+  - 16
+  - 32
+
+# Benchmark settings
+benchmark:
+  warmup_iterations: 10
+  benchmark_iterations: 100
+  timeout_seconds: 300
+
+# Models to test
+models:
+  - name: resnet50
+    path: models/resnet50.onnx
+    input_shape: [1, 3, 224, 224]
+    
+  - name: bert-base
+    path: models/bert-base.onnx
+    input_shape: [1, 128]
+    
+  - name: mobilenet-v2
+    path: models/mobilenetv2.onnx
+    input_shape: [1, 3, 224, 224]
+
+# Output settings
+output:
+  format: json
+  directory: results
+  include_percentiles: true
+  generate_charts: true
