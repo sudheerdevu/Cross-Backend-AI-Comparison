@@ -1,0 +1,17 @@
+# Cross-Backend AI Comparison - Requirements
+
+# Core inference
+onnxruntime>=1.16.0
+numpy>=1.22.0
+
+# Visualization
+matplotlib>=3.5.0
+plotly>=5.0.0
+
+# Data processing
+pandas>=1.4.0
+
+# Optional GPU backends (install separately)
+# onnxruntime-gpu>=1.16.0       # CUDA
+# onnxruntime-directml>=1.16.0  # DirectML (Windows)
+# onnxruntime-rocm>=1.16.0      # AMD ROCm
